@@ -1,15 +1,38 @@
-# npm
-node_modules
+# Node.js
+node_modules/
+
+# Package files
+package.json
 package-lock.json
+
+# Logs
+logs
 *.log
-*.gz
+npm-debug.log*
 
-# Coveralls
-.nyc_output
-coverage
+# Environment
+.env
 
-# Benchmarking
-benchmarks/graphs
+# Dependency directories
+jspm_packages/
 
-# ignore additional files using core.excludesFile
-# https://git-scm.com/docs/gitignore
+# Debugging
+.vscode/
+
+# Editor directories and files
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+*.swp

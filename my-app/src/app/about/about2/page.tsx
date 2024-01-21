@@ -1,5 +1,6 @@
 "use client"
 import { formData } from '@/appData/data'
+import Header from '@/components/Header'
 import Link from 'next/link'
 import React from 'react'
 
@@ -7,6 +8,7 @@ const Cards = () => {
     
   return (
     <>
+    <Header title="About2 page" content="this is about2 page" />
       <section className='bg-slate-200  h-[100vh] grid grid-cols-4 place-items-center place-content-center'>
         {
             formData?.map((data)=>{
@@ -25,7 +27,6 @@ const Cards = () => {
         </button>
       </Link>
       </section>
-   
     </>
   )
 }
