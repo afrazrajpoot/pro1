@@ -61,11 +61,11 @@ exports.changePassword = asyncHandler(async(req,res,next)=>{
     const {oldPassword,newPassword} = req.body
     const user = await User.findById(id)
     if(!user){
-        return next(new CoustomError("user not found",400))
+        return next(new CoustomError("email does not found",400))
     }
     const isMatch = await user.matchPassword(oldPassword)
     if(!isMatch){
-        return next(new CoustomError("password does not match",400))
+        return next(new CoustomError("password do not match",400))
     }
     user.password = newPassword
     await user.save()
