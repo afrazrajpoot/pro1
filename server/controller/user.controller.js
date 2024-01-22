@@ -46,7 +46,7 @@ exports.login = asyncHandler(async(req, res, next)=>{
     }
     const isMatch = await user.matchPassword(password)
     if(!isMatch){
-        return next(new CoustomError("password does not match",400))
+        return next(new CoustomError("password do not match",400))
     }
     const token = jwt.sign({id:user._id},process.env.SECRET_KEY,{expiresIn:"1d"})
     res.cookie("token",token,{httpOnly:true})
