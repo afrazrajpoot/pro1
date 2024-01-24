@@ -24,10 +24,10 @@ const page = () => {
             return (
               <div
                 key={i}
-                className="p-2 bg-blue-500 shadow-xl rounded-md animate-bounce mt-[5vw]"
+                className="p-2 bg-blue-500 shadow-xl rounded-md animate-bounce mt-[5vw] flex"
               >
                 <h1 className="font-bold text-black"> {elem.username}</h1>
-                <p>{elem.username}</p>
+                <p className="font-bold text-black bg-red-300 p-2 h-[100vh]">{elem.username}</p>
                 <p>{elem.email}</p>
               </div>
             );
