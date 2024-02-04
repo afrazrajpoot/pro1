@@ -1,19 +1,33 @@
-export const navData = [
+export const cardData = [
   {
-    title:"Home",
-    url:'/'
+    name:"Afraz",
+    course:"BSC",
+    age:24
   },
   {
-    title:"About",
-    url:'/about'
+    name:'Ali',
+    course:'BSC',
+    age:24
   },
   {
-    title:"Contact",
-    url:'/contact'
+    name:'Ahmad',
+    course:'BSC',
+    age:24
   },
   {
-    title:"Services",
-    url:'/services'
+    name:'Ahmad',
+    course:'BSC',
+    age:24
   },
-
+  {
+    name:'Ahmad',
+    course:'BSC',
+    age:24
+  },
+  {
+    name:'Ahmad',
+    course:'BSC',
+    age:24
+  },
+  
 ]

@@ -1,4 +1,4 @@
-import React from "react";
+
 
 const Header = ({ title, content }: { title: string; content: string }) => {
   return (

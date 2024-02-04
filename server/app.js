@@ -1,7 +1,8 @@
 const express = require('express');
 const { m1 } = require('./middleware/m1');
 const app = express();
-const userRoutes = require('./routes/user.route');
+const userRoutes = require('./routes/user.routes');
+const movieRoutes = require("./routes/movie.routes")
 const { errorMidle } = require('./middleware/errorMideleware');
 const CoustomError = require('./utils/coustomError');
 const cors = require('cors')
@@ -18,6 +19,7 @@ app.use(express.static('public'))
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/v1/',userRoutes);
+app.use('/api/v1/movie',movieRoutes);
 app.get('/',(req,res)=>{
     // const message = tested("Afraz")
     res.status(200).json({

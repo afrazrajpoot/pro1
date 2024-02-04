@@ -5,7 +5,7 @@ const { asyncHandler } = require("../utils/asyncHandler")
 const CoustomError = require('../utils/coustomError')
 const jwt = require("jsonwebtoken")
 exports.createUser = asyncHandler(async(req,res,next)=>{
-    console.log("hyg")
+    // console.log("hyg")
    const {username,password,email} = req.body
    const isEmail = await User.findOne({email:email})
    if(isEmail){
@@ -19,7 +19,7 @@ exports.createUser = asyncHandler(async(req,res,next)=>{
    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
        coverImageLocalPath = req.files.coverImage[0].path
    }
-   console.log(req.files)
+//    console.log(req.files)
    const avatar = await uploadOnCloudinary(avatarLocalPath)
    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
    const user = await User.create({username,email,password,avatar:avatar?.url,coverImage:coverImage?.url})
