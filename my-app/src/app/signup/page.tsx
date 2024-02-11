@@ -1,3 +1,4 @@
+import Template from "@/animation/Template"
 import Header from "@/components/Header"
 import Signup from "@/components/Signup"
 import { Button } from "@/components/ui/button"
@@ -5,10 +6,13 @@ import { Button } from "@/components/ui/button"
 const page = () => {
   return (
     <>
-      {/* <Header title="signup page" content="this is signup page" />
-    <main className="bg-blue-500 p-[3vw]">
+    <Template>
+
+      <Header title="signup page" content="this is signup page" />
+    <main className="h-[100vh] w-[100vw] flex justify-center items-center ">
       <Signup />
-    </main>  */}
+    </main> 
+    </Template>
     </>
   )
 }

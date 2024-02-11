@@ -2,9 +2,13 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const userModel = new mongoose.Schema(
   {
-    username:{
+    firstName:{
         type: String,
-        required: [true,"username required"]
+        required: [true,"first name required"]
+    },
+    lastName:{
+        type: String,
+        required: [true,"last  name required"]
     },
     password:{
         type: String,
@@ -22,6 +26,10 @@ const userModel = new mongoose.Schema(
           },
           message: 'Invalid email format',
         },
+      },
+      gender:{
+        type: String,
+        required: [true,"gender required"]
       },
       avatar: {
         type: String,

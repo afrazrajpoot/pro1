@@ -6,23 +6,25 @@ const CoustomError = require('../utils/coustomError')
 const jwt = require("jsonwebtoken")
 exports.createUser = asyncHandler(async(req,res,next)=>{
     // console.log("hyg")
-   const {username,password,email} = req.body
+   const {firstName,lastName,password,email,gender} = req.body
    const isEmail = await User.findOne({email:email})
    if(isEmail){
     return next(new CoustomError("email already exists",400))
    }
-   const avatarLocalPath = req.files?.avatar[0]?.path;
-//    console.log(avatarLocalPath + "av")
-   //const coverImageLocalPath = req.files?.coverImage[0]?.path;
+   if (!req.files || !req.files.avatar || !req.files.coverImage) {
+    return next(new CoustomError("Avatar and coverImage are required",400))
+    
+}
+const avatarLocalPath = req.files.avatar instanceof Array ? req.files.avatar[0].path : req.files.avatar.path;
+const coverImageLocalPath = req.files.coverImage instanceof Array ? req.files.coverImage[0].path : req.files.coverImage.path;
 
-   let coverImageLocalPath;
-   if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-       coverImageLocalPath = req.files.coverImage[0].path
-   }
+//    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
+//        coverImageLocalPath = req.files.coverImage[0].path
+//    }
 //    console.log(req.files)
    const avatar = await uploadOnCloudinary(avatarLocalPath)
    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-   const user = await User.create({username,email,password,avatar:avatar?.url,coverImage:coverImage?.url})
+   const user = await User.create({firstName,lastName,email,password,gender,avatar:avatar?.secure_url,coverImage:coverImage?.secure_url})
    res.status(201).json({
     success:true,
     data:user
@@ -66,7 +68,8 @@ exports.login = asyncHandler(async(req, res, next)=>{
     res.status(200).json({
         success:true,
         message:"login successful",
-        data:user
+        data:user,
+        token:token
     })
 })
 exports.changePassword = asyncHandler(async(req,res,next)=>{

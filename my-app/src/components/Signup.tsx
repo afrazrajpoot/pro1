@@ -1,54 +1,79 @@
-"use client";
-
-import axios from "axios";
+"use client"
+import { useState, useRef } from "react";
 import { useFormik } from "formik";
 import Image from "next/image";
-import { useRef, useState } from "react";
 import * as Yup from "yup";
 import { Button } from "./ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { formMutation } from "@/queryFn/formMutation";
+import { motion, useAnimation } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { Loader, SignupIcon } from "./loaderAndIcons";
+
 
 const Signup = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
-    null
-  );
-  const fileInputRef = useRef<any>(null);
-  const coverImageFileInputRef = useRef<any>(null);
-  const validateSchema = Yup.object().shape({
-    username: Yup.string()
-      .required("This field is required")
-      .min(3, "Name must be 3 or more characters"),
+  const [imageState, setImageState] = useState<boolean>(false);
+  const controls = useAnimation();
+  const navigate = useRouter()
+  const mutation = useMutation({
+    mutationFn: formMutation,
+    onSuccess: (data: any) => {
+      console.log(data);
+      setImagePreview(null);
+      setImageState(false);
+      toast.success("user register")
+      navigate.push("/")
+    },
+    onError: (error: any) => {
+      console.error(error);
+      setImagePreview(null);
+      setImageState(false)
+      toast.error("wrong credential")
+    },
+  });
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverImageFileInputRef = useRef<HTMLInputElement>(null);
+
+  const validateSchema = Yup.object().shape({
+    firstName: Yup.string().required("First name is required"),
+    lastName: Yup.string().required("Last name is required"),
     email: Yup.string()
       .email("Please enter a valid email")
-      .required("This field is required"),
+      .required("Email is required"),
     password: Yup.string()
-      .required("This field is required")
-      .min(8, "Pasword must be 8 or more characters")
+      .required("Password is required")
+      .min(8, "Password must be 8 or more characters")
       .matches(
         /(?=.*[a-z])(?=.*[A-Z])\w+/,
-        "Password ahould contain at least one uppercase and lowercase character"
+        "Password should contain at least one uppercase and lowercase character"
       )
       .matches(/\d/, "Password should contain at least one number")
       .matches(
         /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/,
         "Password should contain at least one special character"
       ),
+    gender: Yup.string().required("Gender is required"),
   });
+
   const {
     handleSubmit,
-    values,
     handleChange,
     handleBlur,
     errors,
     touched,
     setFieldValue,
     resetForm,
+    values,
   } = useFormik({
     initialValues: {
-      username: "",
-      password: "",
+      firstName: "",
+      lastName: "",
       email: "",
+      password: "",
+      gender: "",
       avatar: "",
       coverImage: "",
     },
@@ -56,23 +81,16 @@ const Signup = () => {
     onSubmit: async (values) => {
       try {
         const formData = new FormData();
-        formData.append("username", values?.username);
-        formData.append("password", values?.password);
-        formData.append("email", values?.email);
-        formData.append("avatar", values?.avatar);
-        formData.append("coverImage", values?.coverImage);
+        formData.append("firstName", values.firstName);
+        formData.append("lastName", values.lastName);
+        formData.append("email", values.email);
+        formData.append("password", values.password);
+        formData.append("avatar", values.avatar);
+        formData.append("coverImage", values.coverImage);
+        formData.append("gender", values.gender);
+
         console.log(formData);
-        const resp = await axios.post(
-          "http://localhost:8000/api/v1/registerUser",
-          formData,
-          {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        console.log(resp);
+        mutation.mutate(formData);
         resetForm(); // Reset the form after successful submission
       } catch (err: any) {
         console.error("Error registering user:", err.message);
@@ -81,108 +99,181 @@ const Signup = () => {
     },
   });
 
-  function handleImage(e: any, fieldName: string) {
-    setFieldValue(fieldName, e.currentTarget.files[0]);
-
-    const file = e.currentTarget.files[0];
+  function handleImage(e: React.ChangeEvent<HTMLInputElement>, fieldName: string) {
+    const file = e.target.files?.[0];
     if (file) {
       const previewURL = URL.createObjectURL(file);
+      setFieldValue(fieldName, file);
 
-      // Update the appropriate preview state based on the field name
       if (fieldName === "avatar") {
         setImagePreview(previewURL);
-      } else if (fieldName === "coverImage") {
-        setCoverImagePreview(previewURL);
       }
     }
   }
 
-  // function uploadCoverImage() {
-  //   if (coverImageFileInputRef.current) {
-  //     coverImageFileInputRef.current.click();
-  //   }
-  // }
   function uploadImages(inputRef: React.RefObject<HTMLInputElement>) {
+   setTimeout(()=>{
+    setImageState(true);
+   },5000)
     if (inputRef.current) {
       inputRef.current.click();
     }
   }
+
   return (
-    <main className=" ">
-      {imagePreview && (
-        <Image
-          src={imagePreview}
-          width={100}
-          height={100}
-          alt="Preview"
-          className="rounded-full"
-        />
+    <motion.main  >
+      {mutation.isPending ? (
+        <>
+        
+       <Loader />
+
+        </>
+      ) : (
+        <motion.main className="relative overflow-x-hidden" >
+          {imageState ? (
+            <div className="absolute w-full max-w-[15vw] h-[15vw] rounded-full top-[1vw] left-[15vw] cursor-pointer">
+              {imagePreview && (
+                <Image
+                  src={imagePreview}
+                  width={140}
+                  height={140}
+                  alt="Preview"
+                  className="rounded-full"
+                />
+              )}
+            </div>
+          ) : (
+            <motion.div   
+              onClick={() => uploadImages(fileInputRef)}
+              className="w-full max-w-[10vw] h-[10vw] absolute rounded-full top-[1vw] left-[15vw] "
+            >
+             <SignupIcon />
+            </motion.div>
+          )}
+
+          <motion.form
+            onSubmit={handleSubmit}
+            className="p-[2vw]  bg-[#E1F0DA] w-full max-w-[50vw] shadow-md rounded-md"
+          >
+            <div className="flex gap-[2vw] w-full mt-[9vw]">
+              <input
+                type="text"
+                name="firstName"
+                value={values.firstName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="First Name"
+                className={`p-[0.5vw] ${
+                  errors.firstName && " border-[2px] border-red-200"
+                } border-[1px]  w-full max-w-[30vw]`}
+              />
+
+              <input
+                type="text"
+                name="lastName"
+                value={values.lastName}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Last Name"
+                className={`p-[0.5vw] ${
+                  errors.lastName && " border-[2px] border-red-200"
+                } border-[1px]  w-full max-w-[30vw]`}
+              />
+            </div>
+
+            <div className="flex flex-col w-full mt-[2.5vw]">
+              <input
+                type="email"
+                name="email"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="example@example.com"
+                className={`p-[0.5vw] ${
+                  errors.email && " border-[2px] border-red-200"
+                }  `}
+              />
+
+              <input
+                type="password"
+                name="password"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Password"
+                className={`p-[0.5vw] ${
+                  errors.password && " border-[2px] border-red-200"
+                } mt-[2vw]`}
+              />
+            </div>
+
+            <div className=" mt-[2vw] w-full flex flex-col">
+              Gender:
+              <label className="  ">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="male"
+                  checked={values.gender === "male"}
+                  onChange={handleChange}
+                  className="mx-[0.5vw]"
+                />
+                Male
+              </label>
+              <label className=" ">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="female"
+                  checked={values.gender === "female"}
+                  onChange={handleChange}
+                  className="mx-[0.5vw]"
+                />
+                Female
+              </label>
+              <label htmlFor="">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="other"
+                  checked={values.gender === "other"}
+                  onChange={handleChange}
+                  className="mx-[0.5vw]"
+                />
+                Other
+              </label>
+            </div>
+
+            <input
+              type="file"
+              placeholder="Profile Image"
+              name="avatar"
+              onChange={(e) => handleImage(e, "avatar")}
+              ref={fileInputRef}
+              hidden
+            />
+
+            <input
+              type="file"
+              placeholder="Profile Image"
+              name="coverImage"
+              ref={coverImageFileInputRef}
+              onChange={(e) => handleImage(e, "coverImage")}
+              hidden
+            />
+
+            <motion.button      whileHover={{ scale: 1.1  }}
+        whileTap={{ scale: 0.9 }}
+       type="submit" className="mt-[2vw] w-full p-[0.5vw] bg-[#bfc1e9] text-black rounded-lg shadow-lg">
+              Submit
+            </motion.button>
+          </motion.form>
+          <button  onClick={() => uploadImages(coverImageFileInputRef)}>
+            Upload Cover Image
+          </button>
+        </motion.main>
       )}
-      <form
-        onSubmit={handleSubmit}
-        className=" p-[2vw] grid grid-cols-2 gap-[1.5vw] bg-red-500 w-full max-w-[50vw]"
-      >
-        <input
-          type="text"
-          name="username"
-          value={values.username}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder="username"
-          className={`p-[0.5vw] ${
-            errors.username && "bg-red-200 border-[2px] border-red-900"
-          } border-[1px] border-red-500 w-full max-w-[20vw]`}
-        />
-
-        <input
-          type="email"
-          name="email"
-          value={values.email}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder="email"
-          className={`p-[0.5vw] ${
-            errors.email && "bg-red-200 border-[2px] border-red-900"
-          } col-span-2 border-[1px] border-red-500`}
-        />
-
-        <input
-          type="password"
-          name="password"
-          value={values.password}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          placeholder="password"
-          className={`p-[0.5vw] ${
-            errors.password && "bg-red-200 border-[2px] border-red-900"
-          } border-[1px] border-red-500`}
-        />
-
-        <input
-          type="file"
-          placeholder="profile image"
-          name="avatar"
-          onChange={(e) => handleImage(e, "avatar")}
-          ref={fileInputRef}
-          hidden
-        />
-
-        <input
-          type="file"
-          placeholder="profile image"
-          name="coverImage"
-          ref={coverImageFileInputRef}
-          onChange={(e) => handleImage(e, "coverImage")}
-          hidden
-        />
-
-        <Button type="submit">submit</Button>
-      </form>
-      <Button onClick={() => uploadImages(coverImageFileInputRef)}>
-        upload coverImage
-      </Button>
-      <Button onClick={() => uploadImages(fileInputRef)}>profile image</Button>
-    </main>
+    </motion.main>
   );
 };
 

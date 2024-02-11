@@ -3,8 +3,10 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import GlobalContext from '@/context/GlobalContext'
 import { ThemeProvider } from '@/themeProvider/ThemeProvider'
-
-
+import QueryProvider from '@/queryProvider/QueryProvider'
+import { ToastContainer } from '@/nextToast/toast'
+import 'react-toastify/dist/ReactToastify.css';
+import Template from '@/animation/Template'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -20,10 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        
+        <QueryProvider>
         <GlobalContext>
+          <Template>
+
        {children}
+       <ToastContainer />
+          </Template>
        </GlobalContext>
+        </QueryProvider>
        
        
         </body>

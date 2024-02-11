@@ -37,8 +37,7 @@ const Nav = () => {
     visible:{
       x:0,
       opacity:1,
-      
-    
+      staggerChildren:0.2
     }
   }
   return (
@@ -66,7 +65,7 @@ const Nav = () => {
       >
         box ek to mene api bhi call kerwai h
       </motion.div>
-      <motion.div
+      {/* <motion.div
         variants={boxVariant}
         animate="Afraz"
         initial="lion"
@@ -74,7 +73,8 @@ const Nav = () => {
         className="bg-red-200 h-[200px] w-[200px]"
       >
         box
-      </motion.div>
+      </motion.div> */}
+
 
       <motion.div
         className="bg-red-200  h-[200px] w-[200px] flex flex-col items-center"
@@ -93,6 +93,16 @@ const Nav = () => {
           </motion.div>
         ))}
       </motion.div>
+      <motion.div
+        className="bg-red-200  h-[200px] w-[200px] flex flex-col items-center mt-[2vw]"
+        variants={boxVariant1}
+        
+        animate={{scale: [1,1.4,1.4,1,1],borderRadius:["20%","20%","50%","50%","20%"],rotate:[0,0,270,270,0]}}
+        transition={{ duration:2 }}
+      >
+      box4
+      </motion.div>
+     <Link href={'/signup'}> <Button>click</Button></Link>
     </motion.div>
   );
 };
